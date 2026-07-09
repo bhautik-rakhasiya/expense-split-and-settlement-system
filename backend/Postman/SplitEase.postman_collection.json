@@ -1,0 +1,523 @@
+{
+  "info": {
+    "_postman_id": "a9b9a67a-12cf-4bfa-9f8e-d9b1c7c945f0",
+    "name": "SplitEase API Collection",
+    "description": "API collection for the SplitEase Expense Sharing Application backend. Features authentication, user directory search, group creation, expense logging, and optimized settlements Suggestions.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "User Registration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.token) {",
+                  "    pm.collectionVariables.set(\"authToken\", res.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Alice Smith\",\n    \"email\": \"alice@example.com\",\n    \"password\": \"Password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Registration Success",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"User registered successfully\",\n    \"data\": {\n        \"user\": {\n            \"id\": \"668bb5a6f20dca5e985fe0f1\",\n            \"name\": \"Alice Smith\",\n            \"email\": \"alice@example.com\"\n        },\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2OGJiNWE2ZjIwZGNhNWU5ODVmZTBmMSIsImlhdCI6MTcyMDcxNjE5OCwiZXhwIjoxNzIwODAyNTk4fQ.signature\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.token) {",
+                  "    pm.collectionVariables.set(\"authToken\", res.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"alice@example.com\",\n    \"password\": \"Password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Login Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Login successful\",\n    \"data\": {\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2OGJiNWE2ZjIwZGNhNWU5ODVmZTBmMSIsImlhdCI6MTcyMDcxNjE5OCwiZXhwIjoxNzIwODAyNTk4fQ.signature\",\n        \"user\": {\n            \"id\": \"668bb5a6f20dca5e985fe0f1\",\n            \"name\": \"Alice Smith\",\n            \"email\": \"alice@example.com\"\n        }\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users Directory",
+      "item": [
+        {
+          "name": "Search Users List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?search=Bob",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Bob",
+                  "description": "Filters users by name or email (excludes currently logged-in user)"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Users Retrieve Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Users retrieved successfully\",\n    \"data\": {\n        \"users\": [\n            {\n                \"_id\": \"668bb5e4f20dca5e985fe104\",\n                \"name\": \"Bob Miller\",\n                \"email\": \"bob@example.com\"\n            }\n        ]\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Exact Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/search?email=bob@example.com",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "bob@example.com"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "User Found",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"User found\",\n    \"data\": {\n        \"user\": {\n            \"_id\": \"668bb5e4f20dca5e985fe104\",\n            \"name\": \"Bob Miller\",\n            \"email\": \"bob@example.com\"\n        }\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Groups",
+      "item": [
+        {
+          "name": "Get User Groups",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Get Groups Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Groups retrieved successfully\",\n    \"data\": {\n        \"groups\": [\n            {\n                \"_id\": \"668bb6e2f20dca5e985fe118\",\n                \"name\": \"Goa Trip 🏖️\",\n                \"members\": [\n                    {\n                        \"_id\": \"668bb5a6f20dca5e985fe0f1\",\n                        \"name\": \"Alice Smith\",\n                        \"email\": \"alice@example.com\"\n                    },\n                    {\n                        \"_id\": \"668bb5e4f20dca5e985fe104\",\n                        \"name\": \"Bob Miller\",\n                        \"email\": \"bob@example.com\"\n                    }\n                ],\n                \"createdBy\": {\n                    \"_id\": \"668bb5a6f20dca5e985fe0f1\",\n                    \"name\": \"Alice Smith\",\n                    \"email\": \"alice@example.com\"\n                },\n                \"createdAt\": \"2026-07-09T14:24:50.000Z\",\n                \"totalExpenses\": 0\n            }\n        ]\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Group",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Goa Trip 🏖️\",\n    \"members\": [\n        \"668bb5e4f20dca5e985fe104\"\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/groups",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Create Group Success",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Group created successfully\",\n    \"data\": {\n        \"group\": {\n            \"name\": \"Goa Trip 🏖️\",\n            \"members\": [\n                \"668bb5a6f20dca5e985fe0f1\",\n                \"668bb5e4f20dca5e985fe104\"\n            ],\n            \"createdBy\": \"668bb5a6f20dca5e985fe0f1\",\n            \"_id\": \"668bb6e2f20dca5e985fe118\",\n            \"createdAt\": \"2026-07-09T14:24:50.000Z\",\n            \"__v\": 0\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Group Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups",
+                "{{groupId}}"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Get Group Details Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Group details retrieved successfully\",\n    \"data\": {\n        \"group\": {\n            \"_id\": \"668bb6e2f20dca5e985fe118\",\n            \"name\": \"Goa Trip 🏖️\",\n            \"members\": [\n                {\n                    \"_id\": \"668bb5a6f20dca5e985fe0f1\",\n                    \"name\": \"Alice Smith\",\n                    \"email\": \"alice@example.com\"\n                },\n                {\n                    \"_id\": \"668bb5e4f20dca5e985fe104\",\n                    \"name\": \"Bob Miller\",\n                    \"email\": \"bob@example.com\"\n                }\n            ],\n            \"createdBy\": {\n                \"_id\": \"668bb5a6f20dca5e985fe0f1\",\n                \"name\": \"Alice Smith\",\n                \"email\": \"alice@example.com\"\n            },\n            \"createdAt\": \"2026-07-09T14:24:50.000Z\",\n            \"totalExpenses\": 1\n        }\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Expenses",
+      "item": [
+        {
+          "name": "Add Expense",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"paidBy\": \"668bb5a6f20dca5e985fe0f1\",\n    \"amount\": 3000,\n    \"description\": \"Dinner Party\",\n    \"splitAmong\": [\n        {\n            \"user\": \"668bb5a6f20dca5e985fe0f1\",\n            \"amount\": 1500\n        },\n        {\n            \"user\": \"668bb5e4f20dca5e985fe104\",\n            \"amount\": 1500\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/expenses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups",
+                "{{groupId}}",
+                "expenses"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Add Expense Success",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Expense added successfully\",\n    \"data\": {\n        \"expense\": {\n            \"groupId\": \"668bb6e2f20dca5e985fe118\",\n            \"description\": \"Dinner Party\",\n            \"amount\": 3000,\n            \"paidBy\": \"668bb5a6f20dca5e985fe0f1\",\n            \"splitAmong\": [\n                {\n                    \"user\": \"668bb5a6f20dca5e985fe0f1\",\n                    \"amount\": 1500,\n                    \"_id\": \"668bb7b9f20dca5e985fe12b\"\n                },\n                {\n                    \"user\": \"668bb5e4f20dca5e985fe104\",\n                    \"amount\": 1500,\n                    \"_id\": \"668bb7b9f20dca5e985fe12c\"\n                }\n            ],\n            \"_id\": \"668bb7b9f20dca5e985fe12a\",\n            \"createdAt\": \"2026-07-09T14:28:09.000Z\",\n            \"__v\": 0\n        }\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Group Expenses List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/expenses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups",
+                "{{groupId}}",
+                "expenses"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Get Expenses List Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Expenses retrieved successfully\",\n    \"data\": {\n        \"expenses\": [\n            {\n                \"_id\": \"668bb7b9f20dca5e985fe12a\",\n                \"groupId\": \"668bb6e2f20dca5e985fe118\",\n                \"description\": \"Dinner Party\",\n                \"amount\": 3000,\n                \"paidBy\": {\n                    \"_id\": \"668bb5a6f20dca5e985fe0f1\",\n                    \"name\": \"Alice Smith\"\n                },\n                \"splitAmong\": [\n                    {\n                        \"user\": {\n                            \"_id\": \"668bb5a6f20dca5e985fe0f1\",\n                            \"name\": \"Alice Smith\"\n                        },\n                        \"amount\": 1500,\n                        \"_id\": \"668bb7b9f20dca5e985fe12b\"\n                    },\n                    {\n                        \"user\": {\n                            \"_id\": \"668bb5e4f20dca5e985fe104\",\n                            \"name\": \"Bob Miller\"\n                        },\n                        \"amount\": 1500,\n                        \"_id\": \"668bb7b9f20dca5e985fe12c\"\n                    }\n                ],\n                \"createdAt\": \"2026-07-09T14:28:09.000Z\"\n            }\n        ]\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Settlements & Summaries",
+      "item": [
+        {
+          "name": "Get Group Balance Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups",
+                "{{groupId}}",
+                "summary"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Summary Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Group summary retrieved successfully\",\n    \"data\": [\n        {\n            \"userId\": \"668bb5a6f20dca5e985fe0f1\",\n            \"name\": \"Alice Smith\",\n            \"balance\": 1500\n        },\n        {\n            \"userId\": \"668bb5e4f20dca5e985fe104\",\n            \"name\": \"Bob Miller\",\n            \"balance\": -1500\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Settlement Suggestions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/groups/{{groupId}}/settlements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups",
+                "{{groupId}}",
+                "settlements"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Settlement Suggest Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Group settlements suggestion retrieved successfully\",\n    \"data\": [\n        {\n            \"from\": \"Bob Miller\",\n            \"fromId\": \"668bb5e4f20dca5e985fe104\",\n            \"to\": \"Alice Smith\",\n            \"toId\": \"668bb5a6f20dca5e985fe0f1\",\n            \"amount\": 1500\n        }\n    ]\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "groupId",
+      "value": "668bb6e2f20dca5e985fe118",
+      "type": "string"
+    }
+  ]
+}
